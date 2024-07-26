@@ -1,8 +1,6 @@
-import { ConfigProvider } from "antd";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ConfigProvider } from "antd";
 
 export const metadata = {
   title: "Create Next App",
@@ -12,15 +10,17 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <ConfigProvider
-        theme={{
-          components: {
-            Layout: {},
-          },
-        }}
-      >
-        <body className={inter.className}>{children}</body>
-      </ConfigProvider>
+      <body>
+        <AntdRegistry>
+          <ConfigProvider
+            theme={{
+              components: {},
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
+      </body>
     </html>
   );
 }
