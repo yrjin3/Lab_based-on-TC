@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>(); // upload file list
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
   const [result, setResult] = useState<Subtitle[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -89,10 +90,10 @@ const App: React.FC = () => {
         }}
         className="!bg-[#9abda5] flex items-center justify-end shadow-sm"
       >
-        <Button onClick={showModal} className="!text-white" type="text" icon={<UploadOutlined />}>
+        <Button onClick={showModal} className="!text-white" type="text" icon={<UploadOutlined />} loading={loading}>
           Upload
         </Button>
-        <Button className="!text-white" type="text" icon={<DownloadOutlined />}>
+        <Button className="!text-white" type="text" icon={<DownloadOutlined />} disabled={result.length === 0}>
           Download
         </Button>
       </Header>
