@@ -6,7 +6,7 @@ import { DownloadOutlined, InboxOutlined, UploadOutlined } from "@ant-design/ico
 import { fromVtt } from "@/utils/parser/fromVtt";
 import { fromSrt } from "@/utils/parser/fromSrt";
 import { Subtitle } from "@/types/subtitle.type";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 
 const { Header, Content, Footer } = Layout;
 const { Dragger } = Upload;
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [result, setResult] = useState<Subtitle[]>([]);
   const [loading, setLoading] = useState(false);
   const [resultLoading, setResultLoading] = useState(true);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -64,7 +65,6 @@ const App: React.FC = () => {
       headers: {
         "Content-Type": "multipart/form-data",
         "x-api-key": "LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ",
-        // ...data.getHeaders()
       },
       data,
     };
@@ -73,6 +73,7 @@ const App: React.FC = () => {
       .request(config)
       .then((response) => {
         const resultURL = response.data.result;
+        setDownloadUrl(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`);
         axios.get(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`).then((res) => {
           const { data } = res;
           setResult(fromSrt(data));
@@ -104,7 +105,7 @@ const App: React.FC = () => {
           <Button onClick={showModal} icon={<UploadOutlined />} loading={loading && resultLoading}>
             업로드
           </Button>
-          <Button icon={<DownloadOutlined />} disabled={result.length === 0}>
+          <Button href={downloadUrl} icon={<DownloadOutlined />} disabled={result.length === 0}>
             다운로드
           </Button>
         </div>
