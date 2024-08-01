@@ -20,6 +20,9 @@ const App: React.FC = () => {
   const [resultLoading, setResultLoading] = useState(true);
   const [downloadUrl, setDownloadUrl] = useState("");
 
+  const [originValue, setOriginValue] = useState("ko");
+  const [targetValue, setTargetValue] = useState("ko");
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -54,8 +57,8 @@ const App: React.FC = () => {
 
     // 번역문
     let data = new FormData();
-    data.append("source_language_code", "ko");
-    data.append("target_language_code", "en");
+    data.append("source_language_code", originValue);
+    data.append("target_language_code", targetValue);
     data.append("file", file.originFileObj);
     data.append("options", "{}");
 
@@ -169,6 +172,10 @@ const App: React.FC = () => {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           onTranslation={onTranslation}
+          originValue={originValue}
+          setOriginValue={setOriginValue}
+          targetValue={targetValue}
+          setTargetValue={setTargetValue}
         />
       </Content>
       <Footer className="text-center"></Footer>
@@ -184,12 +191,23 @@ type Props = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onTranslation: () => void;
+  targetValue: string;
+  originValue: string;
+  setOriginValue: React.Dispatch<React.SetStateAction<string>>;
+  setTargetValue: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const FileUploadModal = ({ fileList, setFileList, isModalOpen, setIsModalOpen, onTranslation }: Props) => {
-  const [originValue, setOriginValue] = useState("ko");
-  const [targetValue, setTargetValue] = useState("ko");
-
+const FileUploadModal = ({
+  fileList,
+  setFileList,
+  isModalOpen,
+  setIsModalOpen,
+  onTranslation,
+  targetValue,
+  originValue,
+  setOriginValue,
+  setTargetValue,
+}: Props) => {
   const handleOk = () => {
     if (!fileList) {
       message.error("번역할 자막 파일을 선택해주세요.");
