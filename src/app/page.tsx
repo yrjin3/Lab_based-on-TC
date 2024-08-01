@@ -90,18 +90,18 @@ const App: React.FC = () => {
     <Layout className="min-h-screen">
       <Header className="!bg-[#fff] flex items-center justify-between shadow-sm sticky top-0 z-[1] w-full">
         <div className="flex text-lg font-semibold items-center gap-3">
-          <div className="bg-black p-2 rounded-full">
+          <div className="bg-[#9abda5] p-2 rounded-full">
             <svg id="Layer_1" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
               <path
-                fill="#e5e5e5"
-                d="m19 0h-14a5.006 5.006 0 0 0 -5 5v14a5.006 5.006 0 0 0 5 5h14a5.006 5.006 0 0 0 5-5v-14a5.006 5.006 0 0 0 -5-5zm1 11h2v2h-2zm0-2v-2h2v2zm-2 2h-12v-9h12zm-14 2h-2v-2h2zm0-4h-2v-2h2zm-2 6h2v2h-2zm4-2h12v9h-12zm14 2h2v2h-2zm2-10h-2v-2.816a3 3 0 0 1 2 2.816zm-18-2.816v2.816h-2a3 3 0 0 1 2-2.816zm-2 16.816h2v2.816a3 3 0 0 1 -2-2.816zm18 2.816v-2.816h2a3 3 0 0 1 -2 2.816z"
+                fill="#fff"
+                d="m15 12a1 1 0 0 1 -1 1h-1v4.5a2.5 2.5 0 1 1 -2.5-2.5 2.577 2.577 0 0 1 .5.05v-2.05a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1zm7-1.515v8.515a5.006 5.006 0 0 1 -5 5h-10a5.006 5.006 0 0 1 -5-5v-14a5.006 5.006 0 0 1 5-5h4.515a6.955 6.955 0 0 1 4.95 2.051l3.484 3.484a6.955 6.955 0 0 1 2.051 4.95zm-6.949-7.02a4.989 4.989 0 0 0 -1.051-.781v4.316a1 1 0 0 0 1 1h4.316a4.989 4.989 0 0 0 -.781-1.051zm4.949 7.02c0-.165-.032-.323-.047-.485h-4.953a3 3 0 0 1 -3-3v-4.953c-.162-.015-.32-.047-.485-.047h-4.515a3 3 0 0 0 -3 3v14a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3z"
               />
             </svg>
           </div>
           자막번역
         </div>
         <div className="flex gap-3">
-          <Button onClick={showModal} icon={<UploadOutlined />} loading={loading}>
+          <Button onClick={showModal} icon={<UploadOutlined />} loading={loading && resultLoading}>
             업로드
           </Button>
           <Button icon={<DownloadOutlined />} disabled={result.length === 0}>
@@ -110,7 +110,7 @@ const App: React.FC = () => {
         </div>
       </Header>
       <Content className="px-[48px]">
-        <div className="bg-white relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
+        <div className="bg-[#9abda5] text-white text-[14px] font-medium relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
           <div className="w-[128px]">타임코드</div>
           <div className="flex-1">원문</div>
           <div className="flex-1">번역문</div>
