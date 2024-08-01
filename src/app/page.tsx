@@ -106,7 +106,7 @@ const App: React.FC = () => {
         </div>
         <div className="flex gap-3">
           <Button onClick={showModal} icon={<UploadOutlined />} loading={loading && resultLoading}>
-            업로드
+            {loading && resultLoading ? "번역중" : "업로드"}
           </Button>
           <Button href={downloadUrl} icon={<DownloadOutlined />} disabled={result.length === 0}>
             다운로드
