@@ -6,7 +6,7 @@ import { DownloadOutlined, InboxOutlined, UploadOutlined } from "@ant-design/ico
 import { fromVtt } from "@/utils/parser/fromVtt";
 import { fromSrt } from "@/utils/parser/fromSrt";
 import { Subtitle } from "@/types/subtitle.type";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const { Header, Content, Footer } = Layout;
 const { Dragger } = Upload;
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
   const [result, setResult] = useState<Subtitle[]>([]);
   const [loading, setLoading] = useState(false);
+  const [resultLoading, setResultLoading] = useState(true);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -24,6 +25,7 @@ const App: React.FC = () => {
 
   const onTranslation = () => {
     if (!fileList.length) return;
+    setLoading(true);
     // 원문
     const file = fileList[0];
 
@@ -58,48 +60,58 @@ const App: React.FC = () => {
 
     let config = {
       method: "post",
-      maxBodyLength: Infinity,
-      url: "https://api.dev.letr.ai/translate-subtitle",
+      url: "/translate-subtitle",
       headers: {
+        "Content-Type": "multipart/form-data",
         "x-api-key": "LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ",
         // ...data.getHeaders()
       },
       data,
     };
 
-    // axios
-    //   .request(config)
-    //   .then((response) => {
-    //     console.log(JSON.stringify(response.data));
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    axios
+      .request(config)
+      .then((response) => {
+        const resultURL = response.data.result;
+        axios.get(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`).then((res) => {
+          const { data } = res;
+          setResult(fromSrt(data));
+          setResultLoading(false);
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+      });
   };
 
   return (
     <Layout className="min-h-screen">
-      <Header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-        }}
-        className="!bg-[#9abda5] flex items-center justify-end shadow-sm"
-      >
-        <Button onClick={showModal} className="!text-white" type="text" icon={<UploadOutlined />} loading={loading}>
-          Upload
-        </Button>
-        <Button className="!text-white" type="text" icon={<DownloadOutlined />} disabled={result.length === 0}>
-          Download
-        </Button>
+      <Header className="!bg-[#fff] flex items-center justify-between shadow-sm sticky top-0 z-[1] w-full">
+        <div className="flex text-lg font-semibold items-center gap-3">
+          <div className="bg-black p-2 rounded-full">
+            <svg id="Layer_1" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
+              <path
+                fill="#e5e5e5"
+                d="m19 0h-14a5.006 5.006 0 0 0 -5 5v14a5.006 5.006 0 0 0 5 5h14a5.006 5.006 0 0 0 5-5v-14a5.006 5.006 0 0 0 -5-5zm1 11h2v2h-2zm0-2v-2h2v2zm-2 2h-12v-9h12zm-14 2h-2v-2h2zm0-4h-2v-2h2zm-2 6h2v2h-2zm4-2h12v9h-12zm14 2h2v2h-2zm2-10h-2v-2.816a3 3 0 0 1 2 2.816zm-18-2.816v2.816h-2a3 3 0 0 1 2-2.816zm-2 16.816h2v2.816a3 3 0 0 1 -2-2.816zm18 2.816v-2.816h2a3 3 0 0 1 -2 2.816z"
+              />
+            </svg>
+          </div>
+          자막번역
+        </div>
+        <div className="flex gap-3">
+          <Button onClick={showModal} icon={<UploadOutlined />} loading={loading}>
+            업로드
+          </Button>
+          <Button icon={<DownloadOutlined />} disabled={result.length === 0}>
+            다운로드
+          </Button>
+        </div>
       </Header>
       <Content className="px-[48px]">
         <div className="bg-white relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
-          <div className="w-[128px]"></div>
+          <div className="w-[128px]">타임코드</div>
           <div className="flex-1">원문</div>
           <div className="flex-1">번역문</div>
         </div>
@@ -119,8 +131,8 @@ const App: React.FC = () => {
         {subtitles.length > 0 &&
           subtitles.map(({ id, startTime, endTime, text }, index) => {
             return (
-              <div key={index} className="bg-white relative px-[20px] py-[16px] rounded-r-[10px] my-[8px] shadow-sm border-l-[4px] border-[#9abda5]">
-                <div className="text-[#9abda5] text-xl font-bold mb-[6px]">{id}</div>
+              <div key={index} className="bg-white relative px-[20px] py-[8px] rounded-r-[10px] my-[8px] shadow-sm border-l-[4px] border-[#9abda5]">
+                <div className="text-[#9abda5] text-[16px] font-bold mb-[6px]">{id}</div>
                 <div className="flex items-start gap-5">
                   <div className="w-[128px] flex flex-col">
                     <div className="grid grid-rows-2 gap-y-1 text-[12px]" style={{ gridTemplateColumns: "auto auto" }}>
@@ -136,8 +148,14 @@ const App: React.FC = () => {
                   </div>
                   <div className="flex-1">{text}</div>
                   <div className="flex-1 flex flex-col gap-2">
-                    <Skeleton.Input active={true} size={"small"} className="!h-[18px]" />
-                    <Skeleton.Input active={true} size={"small"} block className="!h-[18px]" />
+                    {resultLoading ? (
+                      <>
+                        <Skeleton.Input active={true} size={"small"} className="!h-[18px]" />
+                        <Skeleton.Input active={true} size={"small"} block className="!h-[18px]" />
+                      </>
+                    ) : (
+                      <>{result[index].text}</>
+                    )}
                   </div>
                 </div>
               </div>
