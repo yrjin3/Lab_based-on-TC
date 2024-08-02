@@ -6,6 +6,8 @@ import { ArrowUpOutlined, DownloadOutlined, InboxOutlined, UploadOutlined } from
 import { fromVtt } from "@/utils/parser/fromVtt";
 import { fromSrt } from "@/utils/parser/fromSrt";
 import { Subtitle } from "@/types/subtitle.type";
+import Lottie from "lottie-react";
+import LoadingAnimation from "./../../public/lottie/loading.json";
 import axios from "axios";
 
 const { Header, Content, Footer } = Layout;
@@ -16,8 +18,7 @@ const App: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>(); // upload file list
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
   const [result, setResult] = useState<Subtitle[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [resultLoading, setResultLoading] = useState(true);
+  const [resultLoading, setResultLoading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState("");
 
   const [originValue, setOriginValue] = useState("ko");
@@ -29,9 +30,9 @@ const App: React.FC = () => {
 
   const onTranslation = () => {
     if (!fileList.length) return;
-    setLoading(true);
     // 원문
     const file = fileList[0];
+    setResultLoading(true);
 
     let reader = new FileReader();
 
@@ -88,16 +89,16 @@ const App: React.FC = () => {
 
           setResultLoading(false);
         });
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        setLoading(false);
+        setResultLoading(false);
       });
   };
 
   return (
     <Layout className="min-h-screen">
+      {resultLoading && <div className="bg-[#0000002e] w-screen h-screen fixed z-10" />}
       <Header className="!bg-[#fff] flex items-center justify-between shadow-sm sticky top-0 z-[1] w-full">
         <a href="/" className="flex text-lg font-semibold items-center gap-3">
           <div className="bg-[#9abda5] p-2 rounded-full">
@@ -111,8 +112,8 @@ const App: React.FC = () => {
           자막번역
         </a>
         <div className="flex gap-3">
-          <Button onClick={showModal} icon={<UploadOutlined />} loading={loading && resultLoading}>
-            {loading && resultLoading ? "번역중" : "업로드"}
+          <Button onClick={showModal} icon={<UploadOutlined />} loading={resultLoading}>
+            {resultLoading ? "번역중" : "업로드"}
           </Button>
           <Button href={downloadUrl} icon={<DownloadOutlined />} disabled={result.length === 0}>
             다운로드
@@ -128,6 +129,11 @@ const App: React.FC = () => {
               <div className="flex-1">원문</div>
               <div className="flex-1">번역문</div>
             </div>
+            {resultLoading && (
+              <div className="fixed w-[500px] top-0 z-10 left-0 translate-y-1/2 translate-x-1/2">
+                <Lottie animationData={LoadingAnimation} loop />
+              </div>
+            )}
             <>
               {subtitles.map(({ id, startTime, endTime, text }, index) => {
                 return (
