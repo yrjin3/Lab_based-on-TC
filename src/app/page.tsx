@@ -68,7 +68,7 @@ const App: React.FC = () => {
       url: "/translate-subtitle",
       headers: {
         "Content-Type": "multipart/form-data",
-        "x-api-key": "LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ",
+        "x-api-key": process.env.NEXT_PUBLIC_X_API_KEY,
       },
       data,
     };
@@ -77,8 +77,8 @@ const App: React.FC = () => {
       .request(config)
       .then((response) => {
         const resultURL = response.data.result;
-        setDownloadUrl(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`);
-        axios.get(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`).then((res) => {
+        setDownloadUrl(`${resultURL}?x-api-key=${process.env.NEXT_PUBLIC_X_API_KEY}`);
+        axios.get(`${resultURL}?x-api-key=${process.env.NEXT_PUBLIC_X_API_KEY}`).then((res) => {
           const { data } = res;
 
           if (file.name.endsWith(".srt")) {
@@ -98,7 +98,14 @@ const App: React.FC = () => {
 
   return (
     <Layout className="min-h-screen">
-      {resultLoading && <div className="bg-[#0000002e] w-screen h-screen fixed z-10" />}
+      {resultLoading && (
+        <>
+          <div className="fixed w-[500px] top-1/2 z-10 left-1/2 -translate-y-1/2 -translate-x-1/2">
+            <Lottie animationData={LoadingAnimation} loop />
+          </div>
+          <div className="bg-[#0000002e] w-screen h-screen fixed z-10" />
+        </>
+      )}
       <Header className="!bg-[#fff] flex items-center justify-between shadow-sm sticky top-0 z-[1] w-full">
         <a href="/" className="flex text-lg font-semibold items-center gap-3">
           <div className="bg-[#9abda5] p-2 rounded-full">
@@ -129,11 +136,6 @@ const App: React.FC = () => {
               <div className="flex-1">원문</div>
               <div className="flex-1">번역문</div>
             </div>
-            {resultLoading && (
-              <div className="fixed w-[500px] top-0 z-10 left-0 translate-y-1/2 translate-x-1/2">
-                <Lottie animationData={LoadingAnimation} loop />
-              </div>
-            )}
             <>
               {subtitles.map(({ id, startTime, endTime, text }, index) => {
                 return (
