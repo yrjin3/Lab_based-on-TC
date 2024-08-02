@@ -18,7 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AntdRegistry>
           <ConfigProvider
             theme={{
-              components: {},
+              token: {
+                colorPrimary: "#9abda5",
+                colorPrimaryHover: "#70ad83",
+                colorLink: "#000",
+              },
             }}
           >
             {children}

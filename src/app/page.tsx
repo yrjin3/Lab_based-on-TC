@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Layout, Modal, Skeleton, message, Upload, UploadProps, Radio, RadioChangeEvent, Tag, UploadFile } from "antd";
-import { DownloadOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, Layout, Modal, Skeleton, message, Upload, UploadProps, Radio, RadioChangeEvent, Tag, UploadFile, FloatButton } from "antd";
+import { ArrowUpOutlined, DownloadOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
 import { fromVtt } from "@/utils/parser/fromVtt";
 import { fromSrt } from "@/utils/parser/fromSrt";
 import { Subtitle } from "@/types/subtitle.type";
@@ -79,7 +79,13 @@ const App: React.FC = () => {
         setDownloadUrl(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`);
         axios.get(`${resultURL}?x-api-key=LETRHRCFLQFBD8I7HZNVR2O6VJI1EH6293ZJ`).then((res) => {
           const { data } = res;
-          setResult(fromSrt(data));
+
+          if (file.name.endsWith(".srt")) {
+            setResult(fromSrt(data));
+          } else {
+            setResult(fromVtt(data));
+          }
+
           setResultLoading(false);
         });
         setLoading(false);
@@ -93,7 +99,7 @@ const App: React.FC = () => {
   return (
     <Layout className="min-h-screen">
       <Header className="!bg-[#fff] flex items-center justify-between shadow-sm sticky top-0 z-[1] w-full">
-        <div className="flex text-lg font-semibold items-center gap-3">
+        <a href="/" className="flex text-lg font-semibold items-center gap-3">
           <div className="bg-[#9abda5] p-2 rounded-full">
             <svg id="Layer_1" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1">
               <path
@@ -103,7 +109,7 @@ const App: React.FC = () => {
             </svg>
           </div>
           자막번역
-        </div>
+        </a>
         <div className="flex gap-3">
           <Button onClick={showModal} icon={<UploadOutlined />} loading={loading && resultLoading}>
             {loading && resultLoading ? "번역중" : "업로드"}
@@ -114,57 +120,59 @@ const App: React.FC = () => {
         </div>
       </Header>
       <Content className="px-[48px]">
-        <div className="bg-[#9abda5] text-white text-[14px] font-medium relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
-          <div className="w-[128px]">타임코드</div>
-          <div className="flex-1">원문</div>
-          <div className="flex-1">번역문</div>
-        </div>
-        {subtitles.length === 0 &&
-          new Array(5).fill("").map((_, index) => {
-            return (
-              <div key={index} className="bg-white relative p-[24px] rounded-[10px] my-[16px] flex items-center gap-5">
-                <div className="w-[128px]">
-                  <div>{}</div>
-                  <div>{}</div>
-                </div>
-                <div className="flex-1 min-h-[120px]" />
-                <div className="flex-1 min-h-[120px]" />
-              </div>
-            );
-          })}
-        {subtitles.length > 0 &&
-          subtitles.map(({ id, startTime, endTime, text }, index) => {
-            return (
-              <div key={index} className="bg-white relative px-[20px] py-[8px] rounded-r-[10px] my-[8px] shadow-sm border-l-[4px] border-[#9abda5]">
-                <div className="text-[#9abda5] text-[16px] font-bold mb-[6px]">{id}</div>
-                <div className="flex items-start gap-5">
-                  <div className="w-[128px] flex flex-col">
-                    <div className="grid grid-rows-2 gap-y-1 text-[12px]" style={{ gridTemplateColumns: "auto auto" }}>
-                      <Tag className="w-fit" bordered={false} color="gold">
-                        start
-                      </Tag>
-                      <div className="items-center flex text-gray-500">{`${startTime}`.replace(",", ".")}</div>
-                      <Tag className="w-fit" bordered={false} color="gold">
-                        end
-                      </Tag>
-                      <div className="items-center flex text-gray-500">{`${endTime}`.replace(",", ".")}</div>
+        {subtitles.length === 0 && <div className="bg-white h-screen w-full"></div>}
+        {subtitles.length > 0 && (
+          <>
+            <div className="bg-[#9abda5] text-white text-[14px] font-medium relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
+              <div className="w-[128px]">타임코드</div>
+              <div className="flex-1">원문</div>
+              <div className="flex-1">번역문</div>
+            </div>
+            <>
+              {subtitles.map(({ id, startTime, endTime, text }, index) => {
+                return (
+                  <div key={index} className="bg-white relative px-[20px] py-[8px] rounded-r-[10px] my-[8px] shadow-sm border-l-[4px] border-[#9abda5]">
+                    <div className="text-[#9abda5] text-[16px] font-bold mb-[6px]">{id}</div>
+                    <div className="flex items-start gap-5">
+                      <div className="w-[128px] flex flex-col">
+                        <div className="grid grid-rows-2 gap-y-1 text-[12px]" style={{ gridTemplateColumns: "auto auto" }}>
+                          <Tag className="w-fit" bordered={false} color="gold">
+                            start
+                          </Tag>
+                          <div className="items-center flex text-gray-500">{`${startTime}`.replace(",", ".")}</div>
+                          <Tag className="w-fit" bordered={false} color="gold">
+                            end
+                          </Tag>
+                          <div className="items-center flex text-gray-500">{`${endTime}`.replace(",", ".")}</div>
+                        </div>
+                      </div>
+                      <div className="flex-1">{text}</div>
+                      <div className="flex-1 flex flex-col gap-2">
+                        {resultLoading ? (
+                          <>
+                            <Skeleton.Input active={true} size={"small"} className="!h-[18px]" />
+                            <Skeleton.Input active={true} size={"small"} block className="!h-[18px]" />
+                          </>
+                        ) : (
+                          <>{result[index].text}</>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex-1">{text}</div>
-                  <div className="flex-1 flex flex-col gap-2">
-                    {resultLoading ? (
-                      <>
-                        <Skeleton.Input active={true} size={"small"} className="!h-[18px]" />
-                        <Skeleton.Input active={true} size={"small"} block className="!h-[18px]" />
-                      </>
-                    ) : (
-                      <>{result[index].text}</>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </>
+          </>
+        )}
+        <FloatButton
+          type="primary"
+          icon={<ArrowUpOutlined />}
+          onClick={() => {
+            if (window !== undefined) {
+              window.scrollTo(0, 0);
+            }
+          }}
+        />
         {/* Modal */}
         <FileUploadModal
           fileList={fileList}
