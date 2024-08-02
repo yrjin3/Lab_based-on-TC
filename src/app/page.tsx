@@ -120,7 +120,7 @@ const App: React.FC = () => {
         </div>
       </Header>
       <Content className="px-[48px]">
-        {subtitles.length === 0 && <div className="bg-white h-screen w-full"></div>}
+        {subtitles.length === 0 && <div className="bg-transparent mt-4 h-screen h- w-full" />}
         {subtitles.length > 0 && (
           <>
             <div className="bg-[#9abda5] text-white text-[14px] font-medium relative px-[24px] py-[10px] rounded-[10px] my-[16px] flex items-center gap-5 shadow-sm">
